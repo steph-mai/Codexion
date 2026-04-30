@@ -9,7 +9,10 @@ SRCS        = main.c \
 			  src/monitor.c\
 			  src/scheduler.c\
 			  src/utils.c\
-			                
+			  src/cleanup.c\
+			  src/init.c\
+			  src/simulation.c
+
 OBJS        = $(SRCS:.c=.o)
 
 INCLUDES    = -I.

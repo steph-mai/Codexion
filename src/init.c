@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   scheduler.c                                        :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/30 16:19:38 by stephanie         #+#    #+#             */
-/*   Updated: 2026/04/30 16:44:10 by stephanie        ###   ########.fr       */
+/*   Created: 2026/04/30 12:27:22 by stephanie         #+#    #+#             */
+/*   Updated: 2026/04/30 12:28:07 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "codexion.h"
-
-// Pour EDF (Earliest Deadline First)
-long    get_deadline(t_coder *coder)
+int init_data(t_data *data)
 {
+// 	Calculer le nombre de dongles (égal au nombre de codeurs).
 
-}
+// malloc le tableau de t_dongle.
 
-// Pour le Cooldown (long dongle_cooldown)
-int     is_dongle_ready(t_dongle *dongle)
-{
+// Initialiser les mutex globaux (write_mutex, burnout_mutex).
 
+// Boucle pour initialiser les mutex et conditions de chaque dongle.
 }
