@@ -3,39 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/30 16:45:57 by stephanie         #+#    #+#             */
-/*   Updated: 2026/04/30 16:51:23 by stephanie        ###   ########.fr       */
+/*   Created: 2026/05/04 09:28:16 by stmaire           #+#    #+#             */
+/*   Updated: 2026/05/04 09:47:06 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-//fonctions utilisées par tous les fichiers
+int	is_simulation_over(t_data *data)
+{
+	int	status;
 
-int is_simulation_over(t_data *data)
-{
-	//action : Lecture : Elle renvoie la valeur actuelle du flag.
-	// utilisee par tous les threads (Codeurs et Monitor).
-	//Utilisee Tout le temps (à chaque itération de boucle).
-	//se fait sous protection d'un mutex aussi
-	//car si la varaible etait lue et modifiee en même temps ca pourrait crasher !
-}
-long get_time_ms(void)
-{
-
-}
-void print_status(t_coder *coder, char *msg)
-{
-	//centralise et sécurise tous les messages de log du programme.
-	//Synchronisation (Mutex) :  Sans le print_mutex, leurs messages printf s'entremêleraient dans la console
-	//Horodatage (Timestamp) : Elle calcule automatiquement le temps écoulé depuis le début de la simulation
-	//(get_time_ms() - start_time). C'est ce qui permet d'afficher : [1500ms] Coder 3 is compiling.
-	// Contrôle de fin : Elle vérifie si la simulation est finie avant d'afficher. Cela évite qu'un codeur n'affiche "I'm working"
-	//alors qu'un autre vient de mourir il y a 1ms.
-	//On fait une exception pour le message "died from burnout" car c'est le message final.
-	//Qui l'appelle ?
-	//Absolument tout le monde (sauf le main). Elle est parsemée dans le code pour suivre l'évolution de l'état des codeurs.
+	pthread_mutex_lock(&data->simulation_over_mutex);
+	if (data->is_burn_out || data->is_simulation_a_success)
+	{
+		status == 1;
+	}
+	status == 0;
+	pthread_mutex_unlock (&data->simulation_over_mutex);
+	return (status);
 }
 
+long	get_time_ms(void)
+{
+	struct timeval	tv;
+
+	if (gettimeofday(&tv, NULL) == -1)
+		return (-1);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+void	print_status(t_coder *coder, char *msg)
+{
+	long long	current_time;
+
+	current_time = get_time_ms() - coder->data->start_time;
+	pthread_mutex_lock(&coder->data->print_mutex);
+	if (!is_simulation_over(coder->data) || ft_strcmp(msg, "burned out") == 0)
+		printf("%ld %zu %s\n", current_time, coder->id, msg);
+	pthread_mutex_unlock(&coder->data->print_mutex);
+	return ;
+}
