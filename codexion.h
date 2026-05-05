@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 10:21:52 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 10:23:00 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/05 16:07:51 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,11 @@ typedef struct s_data
 		pthread_mutex_t	print_mutex;
 		pthread_mutex_t simulation_over_mutex;
 		pthread_t		thread_monitoring;
-		long long			start_time;
+		long long		start_time;
 		size_t 			is_burn_out;
 		size_t			is_simulation_a_success;
+		int				is_simulation_running;
+		size_t			number_coders_finished;
 }				t_data;
 
 // ######################## PARSING AND INITIZLIZATION ########################
@@ -93,6 +95,7 @@ int		complete_tasks(t_coder *coder);
 // ######################## SIMULATION #######################
 int		start_simulation(t_data *data);
 void	set_simulation_stop(t_data *data);
+int		get_simulation_status(t_data *data);
 
 // ######################## SCHEDULER #######################
 long long	get_deadline(t_coder *coder);
