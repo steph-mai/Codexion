@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:16:46 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 10:38:48 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/05 15:25:23 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,9 @@ int main(int argc, char **argv)
 	t_data data;
 
 	memset(&data, 0, sizeof(t_data));
-
 	if(!fill_args_structure(&data.parsed_args,argc, argv))
-		return(1);
-	printf("parsing OK");
+		return(1); //message d erreur à ajouter ?
+	printf("parsing OK\n");
 
 	if(!init_data(&data))
 		return(free_everything_and_return(&data));

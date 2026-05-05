@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 15:20:20 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 09:05:24 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/05 16:13:33 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,45 @@
 
 int	start_simulation(t_data *data)
 {
-	(void)data;
+	size_t	i;
+
+	i = 0;
+	data->start_time = get_time_ms();
+	data->is_simulation_running = 1;
+	while (i < data->parsed_args.number_of_coders)
+	{
+		data->coders[i].last_compilation_time = data->start_time;
+		if (pthread_create(&data->coders[i].thread_id,
+				NULL, coder_routine, &data->coders[i]) != 0)
+		{
+			set_simulation_stop(data);
+			return (print_error("Failed to create coders threads."));
+		}
+		i++;
+	}
+	if (pthread_create(&data->thread_monitoring,
+			NULL, monitor_routine, data) != 0)
+	{
+		set_simulation_stop(data);
+		return (print_error("Failed to create monitoring thread"));
+	}
 	return (1);
-   //fn  initialise le chronomètre global (start_time),
-   //active le flag de fonctionnement de la simulation,
-   //procède à la création du thread de surveillance (Monitor)
-   //et de l'ensemble des threads Codeurs.
-   //vérifie le succès de chaque appel à pthread_create.
-   //En cas d'échec de création d'un thread en cours de route,
-   //doit signaler l'arrêt immédiat pour ne pas laisser de threads orphelins.
 }
 
-void set_simulation_stop(t_data *data)
+void	set_simulation_stop(t_data *data)
 {
-	(void)data;
-	//Son rôle est de modifier de manière sécurisée (sous protection de mutex)
-	// le flag d'état de la simulation dans la structure globale
-	//pour indiquer que celle-ci doit s'arrêter.
-	//Elle est appelée soit par le Monitor (en cas de burnout ou de travail fini),
-	//soit par la fonction de lancement si un thread ne parvient pas à démarrer.
-	//Elle permet d'assurer que tous les threads lisant ce flag s'arrêteront de concert.
-	//action :Écriture : Elle change la valeur de is_simulation_running de 1 à 0.
-	// ecrite pat Le Monitor (si quelqu'un meurt) ou le Main (si un thread rate).
-	//ecrite Une seule fois (le moment où tout bascule).
+	pthread_mutex_lock(&data->simulation_over_mutex);
+	if (data->is_simulation_running != 0)
+		data->is_simulation_running = 0;
+	pthread_mutex_unlock(&data->simulation_over_mutex);
 }
 
+int	get_simulation_status(t_data *data)
+{
+	int	running;
+
+	pthread_mutex_lock(&data->simulation_over_mutex);
+	running = data->is_simulation_running;
+	pthread_mutex_unlock(&data->simulation_over_mutex);
+	return (running);
+}
