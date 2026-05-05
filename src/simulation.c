@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simulation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 15:20:20 by stephanie         #+#    #+#             */
-/*   Updated: 2026/04/30 16:45:41 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/05 09:05:24 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,8 @@
 
 int	start_simulation(t_data *data)
 {
-	size_t	i;
-
-	i = 0;
-
-	data->start_time = get_time_ms();
+	(void)data;
+	return (1);
    //fn  initialise le chronomètre global (start_time),
    //active le flag de fonctionnement de la simulation,
    //procède à la création du thread de surveillance (Monitor)
@@ -30,6 +27,7 @@ int	start_simulation(t_data *data)
 
 void set_simulation_stop(t_data *data)
 {
+	(void)data;
 	//Son rôle est de modifier de manière sécurisée (sous protection de mutex)
 	// le flag d'état de la simulation dans la structure globale
 	//pour indiquer que celle-ci doit s'arrêter.
