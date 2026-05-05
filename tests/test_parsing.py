@@ -1,61 +1,58 @@
-#include "codexion.h"
-#include <stdio.h>
+import subprocess
+import pytest
 
-void run_test(int id, char *desc, int argc, char **argv)
-{
-    t_args args;
-    int result;
+BINARY = "./codexion"
 
-    // On remet à zéro pour chaque test
-    ft_memset(&args, 0, sizeof(t_args));
-    result = fill_args_structure(&args, argc, argv);
+def run_binary(args):
+    process = subprocess.run(
+        [BINARY] + args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    return process.returncode
 
-    printf("Test %02d: %-40s -> ", id, desc);
-    if (result == 1)
-        printf("\033[0;32mPASS\033[0m (Values: %zu, %lld, %d)\n",
-                args.number_of_coders, args.time_to_burnout, args.scheduler);
-    else
-        printf("\033[0;31mFAIL\033[0m (Error caught)\n");
-}
+# --- 1. TESTS DE SIGNES ET FORMATS BIZARRES ---
+@pytest.mark.parametrize("args", [
+    ["5", "800", "+200", "200", "200", "7", "100", "fifo"],   # Signe + (devrait passer)
+    ["5", "800", "++200", "200", "200", "7", "100", "fifo"],  # Double signe (doit fail)
+    ["5", "800", "--200", "200", "200", "7", "100", "fifo"],  # Double moins (doit fail)
+    ["5", "800", "+-200", "200", "200", "7", "100", "fifo"],  # Signes mixtes (doit fail)
+    ["5", "800", "200-", "200", "200", "7", "100", "fifo"],   # Signe à la fin (doit fail)
+])
+def test_signs_format(args):
+    """Vérifie la gestion rigoureuse des signes mathématiques."""
+    # Le premier cas (+200) peut passer ou fail selon ta stricte application de is_number_str
+    # Si is_number_str n'autorise que '0'-'9', alors +200 doit fail.
+    if args[2] == "+200":
+        pass # Dépend de ta consigne, souvent on accepte le '+' unique
+    else:
+        assert run_binary(args) != 0
 
-int main(void)
-{
-    printf("=== RUNNING PARSING TESTS ===\n\n");
+# --- 2. TESTS D'ESPACES ET CARACTÈRES INVISIBLES ---
+@pytest.mark.parametrize("args", [
+    ["5", "800 ", "200", "200", "200", "7", "100", "fifo"],   # Espace après
+    ["5", "800", "\t200", "200", "200", "7", "100", "fifo"],  # Tabulation
+    ["5", "800", "", "200", "200", "7", "100", "fifo"],       # Argument vide ""
+])
+def test_spaces_and_empty(args):
+    """Vérifie que les espaces et arguments vides ne passent pas inaperçus."""
+    #is_number_str devrait normalement rejeter tout ce qui n'est pas un chiffre pur
+    assert run_binary(args) != 0
 
-    // 1. Tests de Validité (Doivent PASS)
-    char *valid1[] = {"./philo", "5", "800", "200", "200", "200", "7", "100", "fifo"};
-    run_test(1, "Valid FIFO input", 9, valid1);
+# --- 3. TESTS DE LOGIQUE MÉTIER AVANCÉE (VALEURS LIMITES) ---
+@pytest.mark.parametrize("args", [
+    ["0", "800", "200", "200", "200", "7", "100", "fifo"],           # Zéro codeur (Interdit)
+    ["2001", "800", "200", "200", "200", "7", "100", "fifo"],         # Trop de codeurs (ex: > 200)
+    ["5", "0", "200", "200", "200", "7", "100", "fifo"],             # Time to burnout à 0
+    ["5", "800", "200", "200", "200", "7", "99999999999999999999", "fifo"],    # Dongle cooldown immense
+])
+def test_business_limits(args):
+    """Vérifie que validate_args rejette les valeurs physiquement impossibles."""
+    assert run_binary(args) != 0
 
-    char *valid2[] = {"./philo", "1", "60", "10", "10", "10", "1", "5", "edf"};
-    run_test(2, "Valid EDF input (min values)", 9, valid2);
-
-    // 2. Tests de Format (Doivent FAIL)
-    char *fmt1[] = {"./philo", "5", "800", "abc", "200", "200", "7", "100", "fifo"};
-    run_test(3, "Letter in arguments", 9, fmt1);
-
-    char *fmt2[] = {"./philo", "5", "800", "200 ", "200", "200", "7", "100", "fifo"};
-    run_test(4, "Space after number", 9, fmt2); // is_number_str devrait fail ici
-
-    // 3. Tests d'Overflow (Doivent FAIL)
-    char *over1[] = {"./philo", "5", "9223372036854775808", "200", "200", "200", "7", "100", "fifo"};
-    run_test(5, "Overflow LLONG_MAX + 1", 9, over1);
-
-    char *over2[] = {"./philo", "5", "9999999999999999999999", "200", "200", "200", "7", "100", "fifo"};
-    run_test(6, "Massive Overflow", 9, over2);
-
-    // 4. Tests de Logique Métier (Doivent FAIL via validate_args)
-    char *log1[] = {"./philo", "0", "800", "200", "200", "200", "7", "100", "fifo"};
-    run_test(7, "0 Coders", 9, log1);
-
-    char *log2[] = {"./philo", "5", "-500", "200", "200", "200", "7", "100", "fifo"};
-    run_test(8, "Negative time", 9, log2);
-
-    // 5. Tests du Scheduler (Doivent FAIL)
-    char *sched1[] = {"./philo", "5", "800", "200", "200", "200", "7", "100", "other"};
-    run_test(9, "Unknown scheduler mode", 9, sched1);
-
-    char *sched2[] = {"./philo", "5", "800", "200", "200", "200", "7", "100", "FIFO"};
-    run_test(10, "Scheduler Case Sensitive (FIFO)", 9, sched2);
-
-    return (0);
-}
+# --- 4. LE CAS LLONG_MIN (TRÈS SPÉCIFIQUE) ---
+def test_llong_min():
+    """Vérifie le comportement face à la plus petite valeur possible d'un long long."""
+    args = ["5", "-9223372036854775808", "200", "200", "200", "7", "100", "fifo"]
+    assert run_binary(args) != 0

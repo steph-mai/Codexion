@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:35:06 by stephanie         #+#    #+#             */
-/*   Updated: 2026/04/30 15:27:38 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/05 09:04:24 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int free_everything_and_return(t_data *data)
 {
+	(void)data;
+	return (1);
 	// fonction qui free tout
 	// 	Détruire les mutex des dongles : Une boucle while pour faire pthread_mutex_destroy et pthread_cond_destroy sur chaque dongle.
 
@@ -28,5 +30,6 @@ int free_everything_and_return(t_data *data)
 }
 void cleanup_simulation(t_data *data)
 {
+	(void)data;
 	//pour s'assurer que le programme ne  sarrete pas tt qu'un thread est un train de travailler.
 }

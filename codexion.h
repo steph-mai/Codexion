@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 10:21:52 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/04 11:59:13 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/05 10:23:00 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,25 +19,15 @@
 # include <stddef.h>
 # include <limits.h>
 # include <sys/time.h>
+# include <string.h>
+
+typedef	struct s_data t_data; // Déclaration anticipée
 
 typedef enum e_scheduler
 {
 	SCHEDULER_FIFO,
 	SCHEDULER_EDF
 }				t_scheduler;
-
-typedef struct s_data
-{
-		t_args			parsed_args;
-		t_dongle		*dongles;
-		t_coder			*coders;
-		pthread_mutex_t	print_mutex;
-		pthread_mutex_t simulation_over_mutex;
-		pthread_t		thread_monitoring;
-		long long			start_time;
-		size_t 			is_burn_out;
-		size_t			is_simulation_a_success;
-}				t_data;
 
 typedef struct s_args
 {
@@ -71,9 +61,23 @@ typedef struct s_coder
 	t_data 		*data;
 }				t_coder;
 
+typedef struct s_data
+{
+		t_args			parsed_args;
+		t_dongle		*dongles;
+		t_coder			*coders;
+		pthread_mutex_t	print_mutex;
+		pthread_mutex_t simulation_over_mutex;
+		pthread_t		thread_monitoring;
+		long long			start_time;
+		size_t 			is_burn_out;
+		size_t			is_simulation_a_success;
+}				t_data;
+
 // ######################## PARSING AND INITIZLIZATION ########################
 int		validate_args(t_args *args);
-int		fill_args_structure(t_data *data, int argc,char **argv);
+int		fill_args_structure(t_args *args, int argc,char **argv);
+int		init_data(t_data *data);
 
 // ######################## UTILS AND FREE ########################
 int		free_everything_and_return(t_data *data);
@@ -81,7 +85,7 @@ void	cleanup_simulation(t_data *data);
 
 // ######################## THREADS ########################
 void	*coder_routine(void *arg);
-int 	take_available_dongles(t_coder *coder);
+int		take_available_dongles(t_coder *coder);
 void	compilation_work(t_coder *coder);
 void	put_dongles_away(t_coder *coder);
 int		complete_tasks(t_coder *coder);
@@ -91,17 +95,18 @@ int		start_simulation(t_data *data);
 void	set_simulation_stop(t_data *data);
 
 // ######################## SCHEDULER #######################
-long    get_deadline(t_coder *coder);
-int     is_dongle_ready(t_dongle *dongle);
+long long	get_deadline(t_coder *coder);
+int			is_dongle_ready(t_dongle *dongle);
 
 // ######################## MONITORING #######################
-void    *monitor_routine(void *arg);
-int     is_burn_out(t_data *data);      // Vérifie le flag sécurisé
-int     check_all_alive(t_data *data);  // Le monitor vérifie chaque last_compilation_time
+void	*monitor_routine(void *arg);
+int		is_burn_out(t_data *data);      // Vérifie le flag sécurisé
+int		check_all_alive(t_data *data);  // Le monitor vérifie chaque last_compilation_time
 
 // ######################## UTILS #######################
-long 	get_time_ms(void);
-int 	is_simulation_over(t_data *data);
-void 	print_status(t_coder *coder, char *msg);
+long long 	get_time_ms(void);
+int			is_simulation_over(t_data *data);
+void		print_status(t_coder *coder, char *msg);
+int			print_error(char *message);
 
 #endif
