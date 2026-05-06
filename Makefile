@@ -8,11 +8,12 @@ SRCS        = main.c \
 			  src/coder_routine.c\
 			  src/monitor.c\
 			  src/scheduler.c\
-			  src/utils.c\
+			  src/print.c\
 			  src/cleanup.c\
 			  src/init.c\
 			  src/simulation.c\
-			  src/coder_tasks.c
+			  src/coder_tasks.c\
+			  src/timer.c
 
 OBJS        = $(SRCS:.c=.o)
 

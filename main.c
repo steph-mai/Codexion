@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 10:52:44 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/06 12:04:58 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 16:53:32 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,6 @@ int main(int argc, char **argv)
 
 	cleanup_simulation(&data);
 
-	free_everything_and_return(&data);
+	return(free_everything_and_return(&data));
 	}
 

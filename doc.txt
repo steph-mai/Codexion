@@ -1,0 +1,184 @@
+Pour implémenter et intégrer tes algorithmes de scheduling (FIFO et EDF) avec la structure de Heap (Tas), voici la feuille de route structurée étape par étape.
+
+Étape 1 : Implémenter les fonctions du Tas (Heap)
+C’est le "moteur" de ton arbitrage. Tu dois coder ces fonctions dans un nouveau fichier (ex: scheduler_utils.c).
+
+heap_push :
+
+FONCTION heap_push(queue, id, priority):
+    NOEUD nouveau = {id, priority}
+    queue.heap[queue.size] = nouveau
+    index = queue.size
+    queue.size = queue.size + 1
+
+    // Percolate Up (Remontée)
+    TANT QUE (index > 0):
+        parent = (index - 1) / 2
+        SI (is_higher_priority(queue.heap[index], queue.heap[parent])):
+            ECHANGER(queue.heap[index], queue.heap[parent])
+            index = parent
+        SINON:
+            SORTIR BOUCLE
+FIN FONCTION
+
+Ajoute le t_node à la fin du tableau (size).
+
+Fais remonter l'élément (percolate up) en comparant avec le parent.
+
+Crucial : Utilise la logique de priorité déterministe (Priority puis ID).
+
+heap_pop :
+
+FONCTION heap_pop(queue):
+    SI (queue.size == 0) RETOURNER
+
+    // Remplacer la racine par le dernier élément
+    queue.heap[0] = queue.heap[queue.size - 1]
+    queue.size = queue.size - 1
+    index = 0
+
+    // Percolate Down (Descente)
+    TANT QUE (VRAI):
+        gauche = (2 * index) + 1
+        droite = (2 * index) + 2
+        plus_prioritaire = index
+
+        SI (gauche < queue.size ET is_higher_priority(queue.heap[gauche], queue.heap[plus_prioritaire])):
+            plus_prioritaire = gauche
+        SI (droite < queue.size ET is_higher_priority(queue.heap[droite], queue.heap[plus_prioritaire])):
+            plus_prioritaire = droite
+
+        SI (plus_prioritaire != index):
+            ECHANGER(queue.heap[index], queue.heap[plus_prioritaire])
+            index = plus_prioritaire
+        SINON:
+            SORTIR BOUCLE
+FIN FONCTION
+
+Remplace la racine (index 0) par le dernier élément.
+
+Fais descendre l'élément (percolate down) en comparant avec les enfants pour maintenir la propriété du Min-Heap.
+
+is_higher_priority :
+
+Crée cette petite fonction utilitaire pour centraliser la règle de comparaison (Priority + Tie-breaker sur l'ID).
+
+FONCTION is_higher_priority(node_A, node_B):
+    SI (node_A.priority < node_B.priority):
+        RETOURNER VRAI
+    SI (node_A.priority > node_B.priority):
+        RETOURNER FAUX
+    // En cas d'égalité, l'ID le plus petit gagne (Déterminisme)
+    RETOURNER (node_A.coder_id < node_B.coder_id)
+FIN FONCTION
+
+Étape 2 : Initialisation et Nettoyage
+Ton t_data contient les dongles, et chaque dongle contient son tas.
+
+Dans init_dongles :
+
+Alloue le tableau de nœuds : dongle->wait_queue.heap = malloc(sizeof(t_node) * number_of_coders);.
+
+Initialise size = 0 et capacity = number_of_coders.
+
+Dans free_everything :
+
+Ajoute une boucle pour free(data->dongles[i].wait_queue.heap).
+
+Étape 3 : Mise à jour de secure_wait_for_dongle
+
+FONCTION secure_wait_for_dongle(coder, dongle):
+    PRIO_TYPE prio
+
+    // 1. Calculer la priorité avant de prendre le mutex
+    SI (data.parsed_args.scheduler == SCHEDULER_EDF):
+        prio = coder.last_compilation_time + data.parsed_args.time_to_burnout
+    SINON: // FIFO
+        prio = get_time_ms() // Heure d'arrivée à la requête
+
+    VERROUILLER(dongle.dongle_mutex)
+
+    // 2. S'enregistrer dans la file d'attente
+    heap_push(dongle.wait_queue, coder.id, prio)
+
+    BOUCLE INFINIE:
+        // Vérifier si la simulation est finie
+        SI (simulation_stopped()):
+            retirer_du_tas_si_besoin(dongle.wait_queue, coder.id)
+            DEVERROUILLER(dongle.dongle_mutex)
+            RETOURNER 0
+
+        // ARBITRAGE : Suis-je le premier dans le Tas ?
+        EST_MON_TOUR = (heap_peek(dongle.wait_queue) == coder.id)
+        // PHYSIQUE : Le dongle est-il libre et froid ?
+        EST_PRET = (dongle.is_available ET time_now() >= dongle.available_at)
+
+        SI (EST_MON_TOUR ET EST_PRET):
+            SORTIR BOUCLE
+
+        SI (EST_MON_TOUR ET !EST_PRET):
+            // C'est mon tour mais le dongle refroidit encore
+            pthread_cond_timedwait(dongle.dongle_cond, dongle.dongle_mutex, target_time)
+        SINON:
+            // Ce n'est pas mon tour ou c'est déjà pris par quelqu'un d'autre
+            pthread_cond_wait(dongle.dongle_cond, dongle.dongle_mutex)
+
+    // 3. Sortir de la file et prendre la ressource
+    heap_pop(dongle.wait_queue)
+    dongle.is_available = 0
+
+    // Note : On garde le mutex verrouillé selon ta logique actuelle
+    RETOURNER 1
+FIN FONCTION
+
+C'est ici que l'intégration se fait. La fonction doit devenir "patiente" et disciplinée.
+
+Calculer la priorité avant d'entrer dans la boucle :
+
+Si SCHEDULER_EDF : prio = last_compilation_time + time_to_burnout.
+
+Si SCHEDULER_FIFO : prio = get_time_ms().
+
+S'inscrire : Appelle heap_push immédiatement après avoir pris le dongle_mutex.
+
+Boucle d'attente (while(1)) :
+
+Vérifie heap_peek. Si ce n'est pas ton ID, tu dois faire un pthread_cond_wait, même si le dongle est libre et froid.
+
+Si c'est ton tour (heap_peek == id) ET que le dongle est prêt (is_available + cooldown fini), alors break.
+
+Se désinscrire : Une fois la boucle quittée (juste avant de passer is_available à 0), appelle heap_pop.
+
+Étape 4 : Gestion de la "Liveness" (Réveil des voisins)
+Pour éviter que les threads ne dorment pour toujours alors que c'est leur tour :
+
+Dans put_dongles_away :
+FONCTION put_dongles_away(coder):
+    POUR chaque dongle (gauche et droit):
+        VERROUILLER(dongle.mutex)
+
+        dongle.is_available = 1
+        dongle.available_at = get_timestamp() + cooldown
+
+        // Broadcast est INDISPENSABLE ici pour réveiller TOUT le monde
+        // afin qu'ils vérifient qui est le nouveau heap_peek()
+        pthread_cond_broadcast(dongle.dongle_cond)
+
+        DEVERROUILLER(dongle.mutex)
+FIN FONCTION
+
+Quand tu libères un dongle, le pthread_cond_broadcast est vital. Il va réveiller tous ceux qui attendent dans la wait_queue. Ils vérifieront alors heap_peek pour voir si le nouveau "chef de file" peut avancer.
+
+En cas de mort/arrêt :
+
+Si un thread sort de secure_wait_for_dongle parce que la simulation s'arrête, il doit absolument se retirer du tas s'il y était (fonction heap_remove_id ou simplement vider le tas à la fermeture).
+
+Étape 5 : Tests et Validation
+Test FIFO : Vérifie que les codeurs prennent les dongles dans l'ordre de leur ID (si lancés dans l'ordre).
+
+Test EDF : Reprends ton test où le Codeur 1 mourait à 1801ms. Avec EDF, le Codeur 3 (plus large en temps) devrait voir que le Codeur 1 a une deadline plus proche et le laisser passer.
+
+Vérification Helgrind : Assure-toi que l'accès au heap de chaque dongle est toujours protégé par le dongle_mutex.
+
+Résumé visuel de l'algorithme dans la routine :
+Prendre Mutex Dongle -> Push dans Heap -> TANT QUE (Peek != Mon_ID OU Pas_Prêt) { Wait } -> Pop du Heap -> Marquer Occupé -> Relâcher Mutex.
