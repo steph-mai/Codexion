@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 15:20:20 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/06 10:58:33 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 13:50:09 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,3 +57,14 @@ int	get_simulation_status(t_data *data)
 	pthread_mutex_unlock(&data->simulation_over_mutex);
 	return (running);
 }
+// int	is_simulation_over(t_data *data)
+// {
+// 	int	status;
+
+// 	pthread_mutex_lock(&data->simulation_over_mutex);
+// 	if (data->is_burn_out || data->is_simulation_a_success)
+// 		status = 1;
+// 	status = 0;
+// 	pthread_mutex_unlock (&data->simulation_over_mutex);
+// 	return (status);
+// }
