@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 10:21:52 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 16:07:51 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/05 18:06:51 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CODEXION_H
 
 # include <pthread.h>
+# include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <stddef.h>
@@ -103,8 +104,6 @@ int			is_dongle_ready(t_dongle *dongle);
 
 // ######################## MONITORING #######################
 void	*monitor_routine(void *arg);
-int		is_burn_out(t_data *data);      // Vérifie le flag sécurisé
-int		check_all_alive(t_data *data);  // Le monitor vérifie chaque last_compilation_time
 
 // ######################## UTILS #######################
 long long 	get_time_ms(void);

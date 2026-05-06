@@ -6,24 +6,11 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:27:22 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 15:33:33 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/05 18:07:34 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "codexion.h"
-
-int init_data(t_data *data)
-{
-	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
-		return(print_error("Failed to init print_mutex"));
-	if (pthread_mutex_init(&data->simulation_over_mutex, NULL) != 0)
-		return(print_error("Failed to init simulation_over_mutex"));
-	if(!init_data_dongles(data))
-		return(print_error("Failed to init dongles"));
-	if(!init_data_coders(data))
-		return(print_error("Failed to init coders"));
-	return (1);
-}
 
 static int init_data_dongles(t_data *data)
 {
@@ -65,4 +52,19 @@ static int init_data_coders(t_data *data)
 	}
 	return (1);
 }
+
+int init_data(t_data *data)
+{
+	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
+		return(print_error("Failed to init print_mutex"));
+	if (pthread_mutex_init(&data->simulation_over_mutex, NULL) != 0)
+		return(print_error("Failed to init simulation_over_mutex"));
+	if(!init_data_dongles(data))
+		return(print_error("Failed to init dongles"));
+	if(!init_data_coders(data))
+		return(print_error("Failed to init coders"));
+	return (1);
+}
+
+
 
