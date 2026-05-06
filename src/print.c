@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 09:28:16 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/06 14:10:44 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 17:07:11 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,6 @@ void	print_status(t_coder *coder, char *msg)
 
 int print_error(char *message)
 {
-	fprintf(stderr, "Codexion Error: %s", message);
+	fprintf(stderr, "Codexion Error: %s\n", message);
 	return (0);
 }

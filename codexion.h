@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 10:21:52 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/06 15:01:25 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 17:33:40 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,17 @@ typedef struct s_args
 	t_scheduler		scheduler;
 }				t_args;
 
+typedef struct s_node {
+    int         coder_id;
+    long long   priority; // Deadline pour EDF, Temps d'arrivée pour FIFO
+} t_node;
+
+typedef struct s_queue {
+    t_node  *heap;
+    int     size;
+    int     capacity;
+} t_queue;
+
 typedef struct s_dongle
 {
 	pthread_mutex_t	dongle_mutex;
@@ -49,6 +60,7 @@ typedef struct s_dongle
 	size_t			id;
 	long long		available_at;
 	int				is_available;
+	t_queue         wait_queue;
 }				t_dongle;
 
 typedef struct s_coder
@@ -94,6 +106,7 @@ void		put_dongles_away(t_coder *coder);
 int			complete_tasks(t_coder *coder);
 int			lock_mutex_and_take_dongles(t_coder *coder,
 				t_dongle *first, t_dongle *second);
+int secure_wait_for_dongle(t_coder *coder, t_dongle *dongle);
 
 // ######################## SIMULATION #######################
 int			start_simulation(t_data *data);

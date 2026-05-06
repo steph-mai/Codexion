@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   timer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 13:45:03 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/06 14:11:08 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 16:05:16 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,13 @@ long long	get_time_ms(void)
 
 	if (gettimeofday(&tv, NULL) == -1)
 		return (-1);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+	return ((long long)tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
 long long	get_timestamp(t_data *data)
 {
-
-	long long current_time;
 	long long timestamp;
 
-	current_time = get_time_ms();
 	timestamp = get_time_ms() - data->start_time;
 	return (timestamp);
 }
