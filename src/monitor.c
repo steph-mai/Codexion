@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/05 16:17:51 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/05 18:05:58 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 11:31:01 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ static int	checked_is_all_finished(t_data *data)
 			return (0);
 		i++;
 	}
+	printf("SUCCESS\n");
 	set_simulation_stop(data);
 	return (1);
 }

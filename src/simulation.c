@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 15:20:20 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 16:13:33 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 10:58:33 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	start_simulation(t_data *data)
 
 	i = 0;
 	data->start_time = get_time_ms();
+	printf("Simulation is starting.\n");
 	data->is_simulation_running = 1;
 	while (i < data->parsed_args.number_of_coders)
 	{

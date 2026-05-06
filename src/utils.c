@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 09:28:16 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/05 10:22:01 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 13:39:26 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,36 @@ long long	get_time_ms(void)
 
 void	print_status(t_coder *coder, char *msg)
 {
-	long long	current_time;
+	long long	timestamp_in_ms;
 
-	current_time = get_time_ms() - coder->data->start_time;
 	pthread_mutex_lock(&coder->data->print_mutex);
-	if (!is_simulation_over(coder->data) || strcmp(msg, "burned out") == 0)
-		printf("%lld %zu %s\n", current_time, coder->id, msg);
+	if (!get_simulation_status(coder->data))
+	{
+		pthread_mutex_unlock(&coder->data->print_mutex);
+		return;
+	}
+	timestamp_in_ms = get_time_ms() - coder->data->start_time;
+	printf("%lld %zu %s\n", timestamp_in_ms, coder->id, msg);
 	pthread_mutex_unlock(&coder->data->print_mutex);
-	return ;
 }
+
 int print_error(char *message)
 {
-	fprintf(stderr, "Codexion Error: %s\n", message);
+	fprintf(stderr, "Codexion Error: %s", message);
 	return (0);
+}
+
+void smart_sleep(long long time_to_wait, t_data *data)
+{
+	long long start;
+
+	start = get_time_ms();
+	while ((get_time_ms() - start) < time_to_wait)
+	{
+		// Si la simulation s'arrête (burnout d'un autre), on sort du sommeil
+		if (!get_simulation_status(data))
+			break;
+		// On dort par tranches de 500 microsecondes
+		usleep(500);
+	}
 }

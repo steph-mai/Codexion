@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 10:21:52 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 18:06:51 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/06 13:09:24 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ typedef struct s_dongle
 {
 	pthread_mutex_t	dongle_mutex;
 	pthread_cond_t	dongle_cond;
-	int				id; // essentiels de hierarchiser (tjs d'abord la clé avec le plus petit ID) pour éviter blocages (Deadlocks)
-	long long			available_at;
+	int				id;
+	long long		available_at;
 	int				is_available;
 }				t_dongle;
 
@@ -86,12 +86,13 @@ int		init_data(t_data *data);
 int		free_everything_and_return(t_data *data);
 void	cleanup_simulation(t_data *data);
 
-// ######################## THREADS ########################
+// ######################## CODER THREADS ########################
 void	*coder_routine(void *arg);
 int		take_available_dongles(t_coder *coder);
 void	compilation_work(t_coder *coder);
 void	put_dongles_away(t_coder *coder);
 int		complete_tasks(t_coder *coder);
+int		lock_mutex_and_take_dongles(t_coder *coder, t_dongle *first, t_dongle *second);
 
 // ######################## SIMULATION #######################
 int		start_simulation(t_data *data);
@@ -110,5 +111,6 @@ long long 	get_time_ms(void);
 int			is_simulation_over(t_data *data);
 void		print_status(t_coder *coder, char *msg);
 int			print_error(char *message);
+void		smart_sleep(long long time_to_wait, t_data *data);
 
 #endif

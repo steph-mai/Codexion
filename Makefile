@@ -11,7 +11,8 @@ SRCS        = main.c \
 			  src/utils.c\
 			  src/cleanup.c\
 			  src/init.c\
-			  src/simulation.c
+			  src/simulation.c\
+			  src/coder_tasks.c
 
 OBJS        = $(SRCS:.c=.o)
 
