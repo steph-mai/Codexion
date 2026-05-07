@@ -6,7 +6,7 @@
 /*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:27:22 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/06 17:46:19 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/07 17:35:58 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,13 @@ static int init_data_dongles(t_data *data)
 	{
 		data->dongles[i].id = i;
 		data->dongles[i].is_available = 1;
+		data->dongles[i].is_unused = 1;
 		data->dongles[i].available_at = 0;
 		data->dongles[i].wait_queue.size = 0;
-        // data->dongles[i].wait_queue.capacity = data->parsed_args.number_of_coders;
-        // data->dongles[i].wait_queue.heap = malloc(sizeof(t_node) * data->dongles[i].wait_queue.capacity);
-        // if (!(data->dongles[i].wait_queue.heap))
-        //     return (print_error("Malloc failed for dongle priority queue"));
+        data->dongles[i].wait_queue.capacity = data->parsed_args.number_of_coders;
+        data->dongles[i].wait_queue.node = malloc(sizeof(t_node) * data->dongles[i].wait_queue.capacity);
+        if (!(data->dongles[i].wait_queue.node))
+            return (print_error("Malloc failed for dongle priority queue"));
 		if (pthread_mutex_init(&data->dongles[i].dongle_mutex, NULL) != 0
 			|| pthread_cond_init(&data->dongles[i].dongle_cond, NULL) != 0)
 			return(print_error("Failed to init a dongle mutex or condition"));

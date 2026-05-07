@@ -13,7 +13,8 @@ SRCS        = main.c \
 			  src/init.c\
 			  src/simulation.c\
 			  src/coder_tasks.c\
-			  src/timer.c
+			  src/timer.c\
+			  src/heap_utils.c
 
 OBJS        = $(SRCS:.c=.o)
 
