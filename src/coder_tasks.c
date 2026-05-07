@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coder_tasks.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:45:09 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 16:43:55 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/07 17:47:07 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,11 @@ int lock_mutex_and_take_dongles(t_coder *coder, t_dongle *first, t_dongle *secon
     }
     if (!secure_wait_for_dongle(coder, second))
     {
-        first->is_unused = 1;
-        pthread_cond_broadcast(&first->dongle_cond);
-        pthread_mutex_unlock(&first->dongle_mutex);
-        return (0);
+        pthread_mutex_lock(&first->dongle_mutex);
+		first->is_unused = 1;
+		pthread_cond_broadcast(&first->dongle_cond);
+		pthread_mutex_unlock(&first->dongle_mutex);
+		return (0);
     }
     print_status(coder, "has taken a dongle");
     return (1);
@@ -61,8 +62,7 @@ int secure_wait_for_dongle(t_coder *coder, t_dongle *dongle)
     t_node          new_in_wait_list;
     int             is_priority;
 
-    // livecoding
-    // new_in_wait_list.coder_id = coder->id;
+    new_in_wait_list.coder_id = coder->id;
     new_in_wait_list.arrival_time = get_time_ms();
     if (coder->data->parsed_args.scheduler == SCHEDULER_EDF)
         new_in_wait_list.priority_marker = coder->last_compilation_time + coder->data->parsed_args.time_to_burnout;
@@ -98,6 +98,7 @@ int secure_wait_for_dongle(t_coder *coder, t_dongle *dongle)
     wait_queue_pop(&dongle->wait_queue);
     dongle->is_available = 0;
     dongle->is_unused = 0;
+	pthread_mutex_unlock(&dongle->dongle_mutex);
     return (1);
 }
 
