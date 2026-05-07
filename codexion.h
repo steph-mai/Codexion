@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 10:17:16 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/07 16:39:14 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <limits.h>
 # include <sys/time.h>
 # include <string.h>
+# include <stdint.h>
 
 typedef struct s_data	t_data; // Déclaration anticipée
 
@@ -43,14 +44,15 @@ typedef struct s_args
 }				t_args;
 
 typedef struct s_node {
-    int         coder_id;
-    long long   priority; // Deadline pour EDF, Temps d'arrivée pour FIFO
+    size_t		coder_id;
+    long long	priority_marker;
+	long long	arrival_time;
 } t_node;
 
 typedef struct s_queue {
-    t_node  *heap;
-    int     size;
-    int     capacity;
+    t_node		*node;
+    size_t		size;
+    size_t		capacity;
 } t_queue;
 
 typedef struct s_dongle
@@ -115,11 +117,15 @@ void		set_simulation_stop(t_data *data);
 int			get_simulation_status(t_data *data);
 
 // ######################## SCHEDULER #######################
-int 		is_priority(t_coder *coder);
-void		push_in_wait_queue(t_queue *wait_queue, size_t *coder_id, long long *priority_mark);
+int 		is_priority(t_node a, t_node b);
+void		push_in_wait_queue(t_queue *wait_queue, t_node new_in_wait_list);
 void		wait_queue_pop(t_queue *wait_queue);
-void		remove_from_wait_queue(t_queue *wait_queue, size_t *coder_id);
+void		remove_from_wait_queue(t_queue *wait_queue, size_t coder_id);
 size_t		get_first_in_wait_queue(t_queue *wait_queue);
+
+// ######################## HEAP UTILS #######################
+void		swap_nodes(t_node *a, t_node *b);
+size_t		get_smallest_child(t_queue *wait_queue, size_t index);
 
 // ######################## MONITORING #######################
 void		*monitor_routine(void *arg);

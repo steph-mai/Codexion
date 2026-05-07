@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:45:09 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 10:26:24 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/07 16:43:55 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,21 +58,25 @@ int secure_wait_for_dongle(t_coder *coder, t_dongle *dongle)
 {
     struct          timespec ts;
     long long       target_ms;
-    long long       priority_marker;
+    t_node          new_in_wait_list;
     int             is_priority;
 
+    // livecoding
+    // new_in_wait_list.coder_id = coder->id;
+    new_in_wait_list.arrival_time = get_time_ms();
     if (coder->data->parsed_args.scheduler == SCHEDULER_EDF)
-        priority_marker = coder->last_compilation_time + coder->data->parsed_args.time_to_burnout;
+        new_in_wait_list.priority_marker = coder->last_compilation_time + coder->data->parsed_args.time_to_burnout;
     else
-        priority_marker = get_time_ms();
+        new_in_wait_list.priority_marker = new_in_wait_list.arrival_time;
+
     pthread_mutex_lock(&dongle->dongle_mutex);
-    push_in_wait_queue(&dongle->wait_queue, &coder->id, &priority_marker);
+    push_in_wait_queue(&dongle->wait_queue, new_in_wait_list);
     while (1)
     {
         if (!get_simulation_status(coder->data))
         {
             pthread_mutex_unlock(&dongle->dongle_mutex);
-            remove_from_wait_queue(&dongle->wait_queue, &coder->id);
+            remove_from_wait_queue(&dongle->wait_queue, coder->id);
             return (0);
         }
         is_priority = (get_first_in_wait_queue(&dongle->wait_queue) == coder->id);
@@ -123,8 +127,6 @@ void put_dongles_away(t_coder *coder)
         printf("coder %zu dongle %zu ready at %lld\n", coder->id, coder->right_dongle->id, coder->right_dongle->available_at);
     }
     pthread_mutex_unlock(&coder->data->print_mutex);
-
-    // Signal et Unlock
     pthread_cond_broadcast(&coder->left_dongle->dongle_cond);
     pthread_mutex_unlock(&coder->left_dongle->dongle_mutex);
 
