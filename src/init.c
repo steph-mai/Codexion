@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:27:22 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/06 17:46:19 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/07 10:24:25 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static int init_data_dongles(t_data *data)
 	{
 		data->dongles[i].id = i;
 		data->dongles[i].is_available = 1;
+		data->dongles[i].is_unused = 1;
 		data->dongles[i].available_at = 0;
 		data->dongles[i].wait_queue.size = 0;
         // data->dongles[i].wait_queue.capacity = data->parsed_args.number_of_coders;
