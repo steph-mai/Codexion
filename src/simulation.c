@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simulation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 15:20:20 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 16:13:33 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/09 16:23:12 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	start_simulation(t_data *data)
 
 	i = 0;
 	data->start_time = get_time_ms();
+	printf("Simulation is starting.\n");
 	data->is_simulation_running = 1;
 	while (i < data->parsed_args.number_of_coders)
 	{
@@ -56,3 +57,4 @@ int	get_simulation_status(t_data *data)
 	pthread_mutex_unlock(&data->simulation_over_mutex);
 	return (running);
 }
+

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:27:22 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/05 18:07:34 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/09 16:05:55 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,57 +14,69 @@
 
 static int init_data_dongles(t_data *data)
 {
-	size_t	i;
+    size_t i;
 
-	i = 0;
-	data->dongles = malloc(sizeof(t_dongle) * data->parsed_args.number_of_coders);
-	if(!(data->dongles))
-		return(print_error("Malloc failed for simulation data (dongles)"));
-
-	while (i < data->parsed_args.number_of_coders)
-	{
-		data->dongles[i].id = i;
-		data->dongles[i].is_available = 1;
-		if (pthread_mutex_init(&data->dongles[i].dongle_mutex, NULL) != 0
-			|| pthread_cond_init(&data->dongles[i].dongle_cond, NULL) != 0)
-			return(print_error("Failed to init a dongle mutex or condition"));
-		i++;
-	}
-	return (1);
+    data->dongles = malloc(sizeof(t_dongle) * data->parsed_args.number_of_coders);
+    if (!(data->dongles))
+        return (print_error("Malloc failed for dongles"));
+    memset(data->dongles, 0, sizeof(t_dongle) * data->parsed_args.number_of_coders);
+    i = 0;
+    while (i < data->parsed_args.number_of_coders)
+    {
+        data->dongles[i].id = i + 1;
+        data->dongles[i].is_available = 1;
+        data->dongles[i].is_unused = 1;
+        data->dongles[i].wait_queue.capacity = data->parsed_args.number_of_coders;
+        data->dongles[i].wait_queue.node = malloc(sizeof(t_node) * data->dongles[i].wait_queue.capacity);
+        if (!(data->dongles[i].wait_queue.node))
+        {
+            cleanup_initialized_dongles(data, i);
+            return (0);
+        }
+        // Nettoyage de la mémoire de la heap (important pour is_priority)
+        memset(data->dongles[i].wait_queue.node, 0, sizeof(t_node) * data->dongles[i].wait_queue.capacity);
+        if (pthread_mutex_init(&data->dongles[i].dongle_mutex, NULL) != 0
+            || pthread_cond_init(&data->dongles[i].dongle_cond, NULL) != 0)
+        {
+            cleanup_initialized_dongles(data, i + 1);
+            return (0);
+        }
+        i++;
+    }
+    return (1);
 }
+
 static int init_data_coders(t_data *data)
 {
-	size_t		i;
+    size_t i;
 
-	i = 0;
-	data->coders = malloc(sizeof(t_coder) * data->parsed_args.number_of_coders);
-	if (!(data->coders))
-		return(print_error("Malloc failed for simulation data (coders)"));
-	while (i < data->parsed_args.number_of_coders)
-	{
-		data->coders[i].id = i + 1;
-		data->coders[i].data = data;
-		data->coders[i].last_compilation_time = 0;
-		data->coders[i].achieved_compilations_nb = 0;
-		data->coders[i].left_dongle = &data->dongles[i];
-		data->coders[i].right_dongle = &data->dongles[(i + 1) % data->parsed_args.number_of_coders];
-		i++;
-	}
-	return (1);
+    data->coders = malloc(sizeof(t_coder) * data->parsed_args.number_of_coders);
+    if (!(data->coders))
+        return (print_error("Malloc failed for coders"));
+    memset(data->coders, 0, sizeof(t_coder) * data->parsed_args.number_of_coders);
+    i = 0;
+    while (i < data->parsed_args.number_of_coders)
+    {
+        data->coders[i].id = i + 1;
+        data->coders[i].data = data;
+        data->coders[i].left_dongle = &data->dongles[i];
+        data->coders[i].right_dongle = &data->dongles[(i + 1) % data->parsed_args.number_of_coders];
+        i++;
+    }
+    return (1);
 }
 
 int init_data(t_data *data)
 {
-	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
-		return(print_error("Failed to init print_mutex"));
-	if (pthread_mutex_init(&data->simulation_over_mutex, NULL) != 0)
-		return(print_error("Failed to init simulation_over_mutex"));
-	if(!init_data_dongles(data))
-		return(print_error("Failed to init dongles"));
-	if(!init_data_coders(data))
-		return(print_error("Failed to init coders"));
-	return (1);
+    if (pthread_mutex_init(&data->print_mutex, NULL) != 0 ||
+        pthread_mutex_init(&data->simulation_over_mutex, NULL) != 0)
+        return (free_everything_and_return(data));
+
+    if (!init_data_dongles(data))
+        return (free_everything_and_return(data));
+
+    if (!init_data_coders(data))
+        return (free_everything_and_return(data));
+
+    return (1);
 }
-
-
-
