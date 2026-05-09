@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 16:39:14 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/09 16:26:33 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <limits.h>
 # include <sys/time.h>
 # include <string.h>
-# include <stdint.h>
 
 typedef struct s_data	t_data; // Déclaration anticipée
 
@@ -100,6 +99,7 @@ int			init_data(t_data *data);
 // ######################## UTILS AND FREE ########################
 int			free_everything_and_return(t_data *data);
 void		cleanup_simulation(t_data *data);
+void		cleanup_initialized_dongles(t_data *data, size_t count);
 
 // ######################## CODER THREADS ########################
 void		*coder_routine(void *arg);

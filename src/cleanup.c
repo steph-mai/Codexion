@@ -6,35 +6,37 @@
 /*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 12:35:06 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/06 17:49:12 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/09 15:56:26 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+void cleanup_initialized_dongles(t_data *data, size_t count)
+{
+    size_t i;
+
+    i = 0;
+    if (!data->dongles)
+        return;
+    while (i < count)
+    {
+        // On ne free que si le pointeur n'est pas NULL
+        if (data->dongles[i].wait_queue.node)
+            free(data->dongles[i].wait_queue.node);
+        pthread_mutex_destroy(&data->dongles[i].dongle_mutex);
+        pthread_cond_destroy(&data->dongles[i].dongle_cond);
+        i++;
+    }
+    free(data->dongles);
+    data->dongles = NULL;
+}
+
 int free_everything_and_return(t_data *data)
 {
-	size_t	i;
-
 	if (!data)
 		return(0);
-	if(data->dongles)
-	{
-		i = 0;
-		while (i < data->parsed_args.number_of_coders)
-		{
-			// if (data->dongles[i].wait_queue.heap)
-            // {
-            //     free(data->dongles[i].wait_queue.heap);
-            //     data->dongles[i].wait_queue.heap = NULL;
-            // }
-			pthread_cond_destroy(&data->dongles[i].dongle_cond);
-			pthread_mutex_destroy(&data->dongles[i].dongle_mutex);
-			i++;
-		}
-		free(data->dongles);
-		data->dongles = NULL;
-	}
+	cleanup_initialized_dongles(data, data->parsed_args.number_of_coders);
 		if(data->coders)
 	{
 		free(data->coders);
@@ -71,3 +73,4 @@ void cleanup_simulation(t_data *data)
 		}
 	}
 }
+

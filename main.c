@@ -6,7 +6,7 @@
 /*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 10:52:44 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/06 16:53:32 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/09 16:26:05 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,16 @@ int main(int argc, char **argv)
 	if(!fill_args_structure(&data.parsed_args,argc, argv))
 		return(1);
 	printf("parsing OK\n");
-
 	if(!init_data(&data))
 		return(free_everything_and_return(&data));
-
 	printf("Initialization data OK\n");
-
 	if (!start_simulation(&data))
 	{
 		set_simulation_stop(&data);
 		cleanup_simulation(&data);
 		return (free_everything_and_return(&data));
 	}
-
 	cleanup_simulation(&data);
-
 	return(free_everything_and_return(&data));
-	}
+}
 

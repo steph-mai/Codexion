@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heap_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:32:37 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 16:33:23 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/09 16:19:46 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ size_t	get_smallest_child(t_queue *wait_queue, size_t index)
 	size_t	smallest_index;
 
 	if(!wait_queue)
-		return(SIZE_MAX);
+		return(index);
+		//Si la file est vide ou s'il n'y a pas d'enfants,
+		//l'élément le plus prioritaire est lui-même
 	smallest_index = index;
 	left_child_index = (index) * 2 + 1;
 	right_child_index = (index) * 2 + 2;

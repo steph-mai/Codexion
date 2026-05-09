@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scheduler.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:26 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 16:37:08 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/09 16:13:48 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void remove_from_wait_queue(t_queue *wait_queue, size_t coder_id)
 size_t get_first_in_wait_queue(t_queue *wait_queue)
 {
 	if (!wait_queue || wait_queue->size <= 0)
-		return(SIZE_MAX);
+		return(0);
 	return (wait_queue->node[0].coder_id);
 }
 
