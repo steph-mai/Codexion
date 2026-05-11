@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   timer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 13:45:03 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/06 16:05:16 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 16:46:52 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "codexion.h"
+#include "codexion.h"
 
 long long	get_time_ms(void)
 {
@@ -23,21 +23,21 @@ long long	get_time_ms(void)
 
 long long	get_timestamp(t_data *data)
 {
-	long long timestamp;
+	long long	timestamp;
 
 	timestamp = get_time_ms() - data->start_time;
 	return (timestamp);
 }
 
-void smart_sleep(long long time_to_wait, t_data *data)
+void	active_sleep(long long time_to_wait, t_data *data)
 {
-	long long start;
+	long long	start;
 
 	start = get_time_ms();
 	while ((get_time_ms() - start) < time_to_wait)
 	{
 		if (!get_simulation_status(data))
-			break;
+			break ;
 		usleep(500);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/11 14:22:51 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/11 17:49:04 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <sys/time.h>
 # include <string.h>
 
-typedef struct s_data	t_data; // Déclaration anticipée
+typedef struct s_data	t_data;
 
 typedef enum e_scheduler
 {
@@ -84,10 +84,7 @@ typedef struct s_data
 	pthread_mutex_t	simulation_mutex;
 	pthread_t		thread_monitoring;
 	long long		start_time;
-	size_t			is_burn_out;
-	size_t			is_simulation_a_success;
 	int				is_simulation_running;
-	size_t			number_coders_finished;
 }				t_data;
 
 // ######################## PARSING AND INITIZLIZATION ########################
@@ -103,9 +100,7 @@ void		cleanup_initialized_dongles(t_data *data, size_t count);
 // ######################## CODER THREADS ########################
 void		*coder_routine(void *arg);
 int			take_available_dongles(t_coder *coder);
-void		compilation_work(t_coder *coder);
 void		put_dongles_away(t_coder *coder);
-int			complete_tasks(t_coder *coder);
 int			lock_mutex_and_take_dongles(t_coder *coder,
 				t_dongle *first, t_dongle *second);
 int			secure_wait_for_dongle(t_coder *coder, t_dongle *dongle);
@@ -130,7 +125,7 @@ size_t		get_smallest_child(t_queue *wait_queue, size_t index);
 void		*monitor_routine(void *arg);
 
 // ######################## TIMER #######################
-void		smart_sleep(long long time_to_wait, t_data *data);
+void		active_sleep(long long time_to_wait, t_data *data);
 long long	get_time_ms(void);
 long long	get_timestamp(t_data *data);
 

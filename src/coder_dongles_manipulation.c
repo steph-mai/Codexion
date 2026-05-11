@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   coder_tasks.c                                      :+:      :+:    :+:   */
+/*   coder_dongles_manipulation.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:45:09 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/11 18:12:53 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/11 17:58:59 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int lock_mutex_and_take_dongles(t_coder *coder, t_dongle *first, t_dongle *secon
         first->is_unused = 1;
         pthread_cond_broadcast(&first->dongle_cond);
         pthread_mutex_unlock(&first->dongle_mutex);
-        active_sleep(10, coder->data);
+        // active_sleep(10, coder->data); //TODO supprimer?
         return (0);
     }
     if (!secure_wait_for_dongle(coder, second))
@@ -55,6 +55,7 @@ int lock_mutex_and_take_dongles(t_coder *coder, t_dongle *first, t_dongle *secon
     print_status(coder, "has taken a dongle");
     return (1);
 }
+
 static void choose_waiting_type(t_coder *coder, t_dongle *dongle)
 {
     struct timespec ts;
@@ -82,16 +83,10 @@ static void choose_waiting_type(t_coder *coder, t_dongle *dongle)
 
 int secure_wait_for_dongle(t_coder *coder, t_dongle *dongle)
 {
-    t_node  node;
+    t_node  new_node;
 
-    node.coder_id = coder->id;
-    node.arrival_time = get_time_ms();
-    node.priority_marker = node.arrival_time;
-    if (coder->data->parsed_args.scheduler == SCHEDULER_EDF)
-        node.priority_marker = coder->last_compilation_time
-            + coder->data->parsed_args.time_to_burnout;
     pthread_mutex_lock(&dongle->dongle_mutex);
-    push_in_wait_queue(&dongle->wait_queue, node);
+    push_in_wait_queue(&dongle->wait_queue, new_node);
     choose_waiting_type(coder, dongle);
     if (!get_simulation_status(coder->data))
     {
@@ -110,10 +105,6 @@ void put_dongles_away(t_coder *coder)
     long long current_time;
 
     current_time = get_timestamp(coder->data);
-
-    // Les mutex sont DEJA lockés depuis la fin de secure_wait_for_dongle
-
-    // Mise à jour du premier (Généralement Left si ID < Right ID)
     coder->left_dongle->available_at = current_time + coder->data->parsed_args.dongle_cooldown;
     coder->left_dongle->is_unused = 1;
     pthread_cond_broadcast(&coder->left_dongle->dongle_cond);
@@ -125,3 +116,4 @@ void put_dongles_away(t_coder *coder)
     pthread_cond_broadcast(&coder->right_dongle->dongle_cond);
     pthread_mutex_unlock(&coder->right_dongle->dongle_mutex);
 }
+
