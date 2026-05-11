@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/05 11:52:49 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/05 12:37:55 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/11 13:58:20 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	is_number_str(char *s)
 	size_t	i;
 
 	i = 0;
-	while (s[i] == ' ' || (s[i] >= 9 && *s <= 13 ))
+	while (s[i] == ' ' || (s[i] >= 9 && *s <= 13))
 		i++;
 	if (!s || s[i] == '\0')
 		return (0);
@@ -39,12 +39,13 @@ static long long	ft_atoll_check(const char *s, int *error)
 
 	sign = 1;
 	res = 0;
-	while (*s == ' ' || (*s >= 9 && *s <= 13 ))
+	while (*s == ' ' || (*s >= 9 && *s <= 13))
 		s++;
 	if (*s == '+' || *s == '-')
 	{
-		if (*s++ == '-')
+		if (*s == '-')
 			sign = -sign;
+		s++;
 	}
 	while (*s >= '0' && *s <= '9')
 	{
@@ -73,10 +74,10 @@ int	validate_args(t_args *args)
 
 	if (args->number_of_coders < 1 || args->number_of_coders > 2000)
 		return (print_error("Number of coders must be between 1 and 2000.\n"));
-	if (args->number_of_compiles_required > INT_MAX
+	if (args->number_of_compiles_required > UINT_MAX
 		|| args->number_of_compiles_required == 0)
 		return (print_error("Number of compiles "
-				"must be between 1 and INT_MAX\n"));
+				"must be between 1 and UINT_MAX\n"));
 	limit = 9223372036854775807LL / 1000;
 	if (args->time_to_burnout > limit || args->time_to_compile > limit
 		|| args->time_to_debug > limit || args->time_to_refactor > limit
@@ -99,9 +100,7 @@ int	fill_args_structure(t_args *args, int argc, char **argv)
 	i = 0;
 	error = 0;
 	if (argc != 9)
-		return (print_error("Required : number_of_coders, time_to_burnout, "
-				"time_to_compile, time_to_debug, time_to_refactor, "
-				"number_of_compiles_required, dongle_cooldown, scheduler"));
+		return (print_use());
 	while (i++ < 7)
 	{
 		if (!is_number_str(argv[i]))
@@ -114,7 +113,9 @@ int	fill_args_structure(t_args *args, int argc, char **argv)
 	while (i <= 5)
 		*(ptr++) = (long long)ft_atoll_check(argv[i++], &error);
 	args->dongle_cooldown = (long long)ft_atoll_check(argv[7], &error);
-	if (error == 1 || !fill_scheduler(args, argv[8]))
+	if (error == 1)
+		return (print_error("Numeric overflow detected."));
+	if (!fill_scheduler(args, argv[8]))
 		return (print_error("Scheduler must be exactly 'fifo' or 'edf'"));
 	return (validate_args(args));
 }

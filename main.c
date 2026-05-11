@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 10:52:44 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/09 16:26:05 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 11:59:37 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@ int main(int argc, char **argv)
 	memset(&data, 0, sizeof(t_data));
 	if(!fill_args_structure(&data.parsed_args,argc, argv))
 		return(1);
-	printf("parsing OK\n");
 	if(!init_data(&data))
 		return(free_everything_and_return(&data));
-	printf("Initialization data OK\n");
 	if (!start_simulation(&data))
 	{
 		set_simulation_stop(&data);

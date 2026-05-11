@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simulation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 15:20:20 by stephanie         #+#    #+#             */
-/*   Updated: 2026/05/09 16:23:12 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 10:46:54 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,19 @@ int	start_simulation(t_data *data)
 
 void	set_simulation_stop(t_data *data)
 {
-	pthread_mutex_lock(&data->simulation_over_mutex);
+	pthread_mutex_lock(&data->simulation_mutex);
 	if (data->is_simulation_running != 0)
 		data->is_simulation_running = 0;
-	pthread_mutex_unlock(&data->simulation_over_mutex);
+	pthread_mutex_unlock(&data->simulation_mutex);
 }
 
 int	get_simulation_status(t_data *data)
 {
 	int	running;
 
-	pthread_mutex_lock(&data->simulation_over_mutex);
+	pthread_mutex_lock(&data->simulation_mutex);
 	running = data->is_simulation_running;
-	pthread_mutex_unlock(&data->simulation_over_mutex);
+	pthread_mutex_unlock(&data->simulation_mutex);
 	return (running);
 }
 

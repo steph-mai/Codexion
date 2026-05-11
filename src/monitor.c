@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/05 16:17:51 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/09 16:24:43 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 10:49:27 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ static int	checked_is_burned_out(t_data *data, t_coder *coder) // args à verifi
 	long long	current_time;
 	long long   last_compilation;
 
-	pthread_mutex_lock(&data->simulation_over_mutex);
+	pthread_mutex_lock(&data->simulation_mutex);
     last_compilation = coder->last_compilation_time;
-    pthread_mutex_unlock(&data->simulation_over_mutex);
+    pthread_mutex_unlock(&data->simulation_mutex);
 
 	current_time = get_time_ms();
 	if (current_time - last_compilation > data->parsed_args.time_to_burnout)
@@ -40,22 +40,22 @@ static int checked_is_all_finished(t_data *data)
     i = 0;
     while (i < data->parsed_args.number_of_coders)
     {
-        pthread_mutex_lock(&data->simulation_over_mutex);
+        pthread_mutex_lock(&data->simulation_mutex);
         if (data->coders[i].achieved_compilations_nb < data->parsed_args.number_of_compiles_required)
         {
-            pthread_mutex_unlock(&data->simulation_over_mutex);
+            pthread_mutex_unlock(&data->simulation_mutex);
             return (0); // Un codeur n'a pas fini, on s'arrête là
         }
-        pthread_mutex_unlock(&data->simulation_over_mutex);
+        pthread_mutex_unlock(&data->simulation_mutex);
         i++;
     }
 
     // Si on arrive ici, TOUT LE MONDE a fini
     set_simulation_stop(data);
 
-    pthread_mutex_lock(&data->print_mutex);
-    printf("SUCCESS\n");
-    pthread_mutex_unlock(&data->print_mutex);
+    // pthread_mutex_lock(&data->print_mutex);
+    // printf("SUCCESS\n");
+    // pthread_mutex_unlock(&data->print_mutex);
 
     return (1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 09:28:16 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/06 17:07:11 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 13:43:50 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	print_status(t_coder *coder, char *msg)
 {
 	pthread_mutex_lock(&coder->data->print_mutex);
-	if (!get_simulation_status(coder->data))
+	if(!get_simulation_status(coder->data))
 	{
 		pthread_mutex_unlock(&coder->data->print_mutex);
 		return;
@@ -27,8 +27,17 @@ void	print_status(t_coder *coder, char *msg)
 	pthread_mutex_unlock(&coder->data->print_mutex);
 }
 
-int print_error(char *message)
+int	print_error(char *message)
 {
 	fprintf(stderr, "Codexion Error: %s\n", message);
+	return (0);
+}
+int	print_use()
+{
+	fprintf(stderr, "Error: Invalid number of arguments.\n");
+	fprintf(stderr, "Required arguments are:\n <number_of_coders> "
+		"<time_to_burnout> <time_to_compile> <time_to_debug> "
+		"<time_to_refactor> <number_of_compiles_required> "
+		"<dongle_cooldown> <edf/fifo>");
 	return (0);
 }

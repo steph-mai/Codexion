@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/09 16:26:33 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 14:22:51 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ typedef struct s_node {
 typedef struct s_queue {
     t_node		*node;
     size_t		size;
-    size_t		capacity;
 } t_queue;
 
 typedef struct s_dongle
@@ -82,7 +81,7 @@ typedef struct s_data
 	t_dongle		*dongles;
 	t_coder			*coders;
 	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	simulation_over_mutex;
+	pthread_mutex_t	simulation_mutex;
 	pthread_t		thread_monitoring;
 	long long		start_time;
 	size_t			is_burn_out;
@@ -138,5 +137,6 @@ long long	get_timestamp(t_data *data);
 // ######################## PRINT #######################
 void		print_status(t_coder *coder, char *msg);
 int			print_error(char *message);
+int			print_use();
 
 #endif

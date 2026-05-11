@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coder_tasks.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:45:09 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/07 17:47:07 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/11 13:02:58 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,21 +36,22 @@ int lock_mutex_and_take_dongles(t_coder *coder, t_dongle *first, t_dongle *secon
 {
     if (!secure_wait_for_dongle(coder, first))
         return (0);
-    print_status(coder, "has taken a dongle");
     if (first == second)
     {
-        smart_sleep(coder->data->parsed_args.time_to_burnout, coder->data);
+        first->is_unused = 1;
+        pthread_cond_broadcast(&first->dongle_cond);
         pthread_mutex_unlock(&first->dongle_mutex);
+        smart_sleep(10, coder->data);
         return (0);
     }
     if (!secure_wait_for_dongle(coder, second))
     {
-        pthread_mutex_lock(&first->dongle_mutex);
-		first->is_unused = 1;
-		pthread_cond_broadcast(&first->dongle_cond);
-		pthread_mutex_unlock(&first->dongle_mutex);
-		return (0);
+        first->is_unused = 1;
+        pthread_cond_broadcast(&first->dongle_cond);
+        pthread_mutex_unlock(&first->dongle_mutex);
+        return (0);
     }
+    print_status(coder, "has taken a dongle");
     print_status(coder, "has taken a dongle");
     return (1);
 }
@@ -98,39 +99,60 @@ int secure_wait_for_dongle(t_coder *coder, t_dongle *dongle)
     wait_queue_pop(&dongle->wait_queue);
     dongle->is_available = 0;
     dongle->is_unused = 0;
-	pthread_mutex_unlock(&dongle->dongle_mutex);
+	// pthread_mutex_unlock(&dongle->dongle_mutex);
     return (1);
 }
 
 void compilation_work(t_coder *coder)
 {
 	print_status(coder, "is compiling");
-	pthread_mutex_lock(&coder->data->simulation_over_mutex);
+	pthread_mutex_lock(&coder->data->simulation_mutex);
 	coder->last_compilation_time = get_time_ms();
 	coder->achieved_compilations_nb++;
-	pthread_mutex_unlock(&coder->data->simulation_over_mutex);
+	pthread_mutex_unlock(&coder->data->simulation_mutex);
 	smart_sleep(coder->data->parsed_args.time_to_compile, coder->data);
 }
+
+// void put_dongles_away(t_coder *coder)
+// {
+//     long long current_time;
+
+//     current_time = get_timestamp(coder->data);
+//     coder->left_dongle->available_at = current_time + coder->data->parsed_args.dongle_cooldown;
+//     coder->left_dongle->is_unused = 1;
+//     coder->right_dongle->available_at = current_time + coder->data->parsed_args.dongle_cooldown;
+//     coder->right_dongle->is_unused = 1;
+//     // pthread_mutex_lock(&coder->data->print_mutex);
+//     // if (get_simulation_status(coder->data))
+//     // {
+//     //     printf("coder %zu dongle %zu ready at %lld\n", coder->id, coder->left_dongle->id, coder->left_dongle->available_at);
+//     //     printf("coder %zu dongle %zu ready at %lld\n", coder->id, coder->right_dongle->id, coder->right_dongle->available_at);
+//     // }
+//     // pthread_mutex_unlock(&coder->data->print_mutex);
+//     pthread_cond_broadcast(&coder->left_dongle->dongle_cond);
+//     pthread_mutex_unlock(&coder->left_dongle->dongle_mutex);
+
+//     pthread_cond_broadcast(&coder->right_dongle->dongle_cond);
+//     pthread_mutex_unlock(&coder->right_dongle->dongle_mutex);
+// }
 
 void put_dongles_away(t_coder *coder)
 {
     long long current_time;
 
     current_time = get_timestamp(coder->data);
+
+    // Les mutex sont DEJA lockés depuis la fin de secure_wait_for_dongle
+
+    // Mise à jour du premier (Généralement Left si ID < Right ID)
     coder->left_dongle->available_at = current_time + coder->data->parsed_args.dongle_cooldown;
     coder->left_dongle->is_unused = 1;
-    coder->right_dongle->available_at = current_time + coder->data->parsed_args.dongle_cooldown;
-    coder->right_dongle->is_unused = 1;
-    pthread_mutex_lock(&coder->data->print_mutex);
-    if (get_simulation_status(coder->data))
-    {
-        printf("coder %zu dongle %zu ready at %lld\n", coder->id, coder->left_dongle->id, coder->left_dongle->available_at);
-        printf("coder %zu dongle %zu ready at %lld\n", coder->id, coder->right_dongle->id, coder->right_dongle->available_at);
-    }
-    pthread_mutex_unlock(&coder->data->print_mutex);
     pthread_cond_broadcast(&coder->left_dongle->dongle_cond);
     pthread_mutex_unlock(&coder->left_dongle->dongle_mutex);
 
+    // Mise à jour du deuxième
+    coder->right_dongle->available_at = current_time + coder->data->parsed_args.dongle_cooldown;
+    coder->right_dongle->is_unused = 1;
     pthread_cond_broadcast(&coder->right_dongle->dongle_cond);
     pthread_mutex_unlock(&coder->right_dongle->dongle_mutex);
 }
