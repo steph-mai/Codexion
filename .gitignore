@@ -1,0 +1,5 @@
+*.d
+*.o
+codexion
+.vscode
+stress_test.sh
