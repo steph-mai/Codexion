@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 15:33:37 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 16:45:58 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/12 18:01:35 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,10 @@ void	set_simulation_stop(t_data *data)
 {
 	size_t	i;
 
+	i = 0;
 	pthread_mutex_lock(&data->simulation_mutex);
 	data->is_simulation_running = 0;
 	pthread_mutex_unlock(&data->simulation_mutex);
-
-	i = 0;
 	while (i < data->parsed_args.number_of_coders)
 	{
 		pthread_mutex_lock(&data->dongles[i].dongle_mutex);
