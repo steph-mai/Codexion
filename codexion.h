@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 14:32:02 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/12 17:31:59 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ typedef struct s_data
 	int				is_simulation_running;
 }				t_data;
 
-// ######################## PARSING AND INITIZLIZATION ########################
+// ######################## PARSING AND INITIALIZATION ########################
 int			validate_args(t_args *args);
 int			fill_args_structure(t_args *args, int argc, char **argv);
 int			init_data(t_data *data);

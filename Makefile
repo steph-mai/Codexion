@@ -1,7 +1,7 @@
 NAME        = codexion
 
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -pthread -g
+CFLAGS      = -Wall -Wextra -Werror -pthread
 
 SRCS        = main.c \
               src/parsing.c \
@@ -22,7 +22,7 @@ INCLUDES    = -I.
 
 all: $(NAME)
 
-%.o: %.c
+%.o: %.c Makefile
 	$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 
 $(NAME): $(OBJS)
@@ -31,11 +31,11 @@ $(NAME): $(OBJS)
 -include $(SRCS:.c=.d)
 
 clean:
-	rm -f $(OBJS) $(SRCS:.c=.d)
+	@rm -f $(OBJS) $(SRCS:.c=.d)
 	@echo "Object and dependency files cleaned."
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 	@echo "Executable removed."
 
 re: fclean all

@@ -12,11 +12,10 @@ def run_binary(args):
     )
     return process.returncode
 
-# --- 1. TESTS DE SIGNES ET FORMATS BIZARRES ---
 @pytest.mark.parametrize("args", [
-    ["5", "800", "+200", "200", "200", "7", "100", "fifo"],   # Signe + (devrait passer)
-    ["5", "800", "++200", "200", "200", "7", "100", "fifo"],  # Double signe (doit fail)
-    ["5", "800", "--200", "200", "200", "7", "100", "fifo"],  # Double moins (doit fail)
+    ["5", "800", "+200", "200", "200", "7", "100", "fifo"],
+    ["5", "800", "++200", "200", "200", "7", "100", "fifo"],
+    ["5", "800", "--200", "200", "200", "7", "100", "fifo"],
     ["5", "800", "+-200", "200", "200", "7", "100", "fifo"],  # Signes mixtes (doit fail)
     ["5", "800", "200-", "200", "200", "7", "100", "fifo"],   # Signe à la fin (doit fail)
 ])

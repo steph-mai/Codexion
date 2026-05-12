@@ -164,7 +164,6 @@ A coder can only take a dongle if both conditions are met.
 A dedicated Monitor Thread constantly checks the status of all coders. If a coder misses their deadline or the simulation requirements are met, it sends an immediate signal to stop all threads. This ensures that burnout is detected and logged within the required 10ms window.
 
 ### ✳️  log serialization ###
-melabge
 To prevent "garbled" text in the terminal, all display functions are protected by a global write mutex. This ensures that messages (like "has taken a dongle" or "is compiling") appear one by one and in the correct chronological order.
 
 
