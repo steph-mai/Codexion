@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/11 17:49:04 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/12 14:32:02 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,18 @@ typedef struct s_args
 	t_scheduler		scheduler;
 }				t_args;
 
-typedef struct s_node {
-    size_t		coder_id;
-    long long	priority_marker;
+typedef struct s_node
+{
+	size_t		coder_id;
+	long long	priority_marker;
 	long long	arrival_time;
-} t_node;
+}	t_node;
 
-typedef struct s_queue {
-    t_node		*node;
-    size_t		size;
-} t_queue;
+typedef struct s_queue
+{
+	t_node		*node;
+	size_t		size;
+}	t_queue;
 
 typedef struct s_dongle
 {
@@ -99,11 +101,8 @@ void		cleanup_initialized_dongles(t_data *data, size_t count);
 
 // ######################## CODER THREADS ########################
 void		*coder_routine(void *arg);
-int			take_available_dongles(t_coder *coder);
+int			identify_and_take_dongles(t_coder *coder);
 void		put_dongles_away(t_coder *coder);
-int			lock_mutex_and_take_dongles(t_coder *coder,
-				t_dongle *first, t_dongle *second);
-int			secure_wait_for_dongle(t_coder *coder, t_dongle *dongle);
 
 // ######################## SIMULATION #######################
 int			start_simulation(t_data *data);
@@ -111,7 +110,7 @@ void		set_simulation_stop(t_data *data);
 int			get_simulation_status(t_data *data);
 
 // ######################## SCHEDULER #######################
-int 		is_priority(t_node a, t_node b);
+int			is_priority(t_node a, t_node b);
 void		push_in_wait_queue(t_queue *wait_queue, t_node new_in_wait_list);
 void		wait_queue_pop(t_queue *wait_queue);
 void		remove_from_wait_queue(t_queue *wait_queue, size_t coder_id);
@@ -132,6 +131,6 @@ long long	get_timestamp(t_data *data);
 // ######################## PRINT #######################
 void		print_status(t_coder *coder, char *msg);
 int			print_error(char *message);
-int			print_use();
+int			print_use(void);
 
 #endif

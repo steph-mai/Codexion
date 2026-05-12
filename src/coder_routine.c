@@ -6,13 +6,13 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:43:35 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/11 17:47:40 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/12 14:32:02 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "codexion.h"
+#include "codexion.h"
 
-static void compilation_work(t_coder *coder)
+static void	compilation_work(t_coder *coder)
 {
 	print_status(coder, "is compiling");
 	pthread_mutex_lock(&coder->data->simulation_mutex);
@@ -22,7 +22,7 @@ static void compilation_work(t_coder *coder)
 	active_sleep(coder->data->parsed_args.time_to_compile, coder->data);
 }
 
-static int complete_tasks(t_coder *coder)
+static int	complete_tasks(t_coder *coder)
 {
 	print_status(coder, "is debugging");
 	active_sleep(coder->data->parsed_args.time_to_debug, coder->data);
@@ -33,18 +33,19 @@ static int complete_tasks(t_coder *coder)
 
 void	*coder_routine(void *arg)
 {
-	t_coder *coder = (t_coder *)arg;
+	t_coder	*coder;
 
+	coder = (t_coder *)arg;
 	if (coder->id % 2 == 0)
 		usleep(1000);
 	while (get_simulation_status(coder->data))
 	{
-		if(!take_available_dongles(coder))
-			break;
+		if (!identify_and_take_dongles(coder))
+			break ;
 		compilation_work(coder);
 		put_dongles_away(coder);
-		if(!complete_tasks(coder))
-			break;
+		if (!complete_tasks(coder))
+			break ;
 		active_sleep(1, coder->data);
 	}
 	return (NULL);
