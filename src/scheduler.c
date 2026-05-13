@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scheduler.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:26 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 10:35:07 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/13 16:19:37 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,9 @@ int	is_priority(t_node a, t_node b)
 {
 	if (a.priority_marker < b.priority_marker)
 		return (1);
-	if (b.priority_marker < a.priority_marker)
+	if (a.priority_marker > b.priority_marker)
 		return (0);
-	if (a.arrival_time <= b.arrival_time)
-		return (1);
-	return (0);
+	return (a.arrival_time < b.arrival_time);
 }
 
 void	push_in_wait_queue(t_queue *wait_queue, t_node new_node)

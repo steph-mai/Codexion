@@ -45,4 +45,4 @@ test: $(NAME)
 	@echo "Lancement des tests Pytest..."
 	@pytest tests/test_parsing.py -v
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test

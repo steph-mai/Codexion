@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/05 11:52:49 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 16:10:58 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/13 16:19:57 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	is_number_str(char *s)
 	size_t	i;
 
 	i = 0;
-	while (s[i] == ' ' || (s[i] >= 9 && *s <= 13))
+	while (s[i] == ' ' || (s[i] >= 9 && s[i] <= 13))
 		i++;
 	if (!s || s[i] == '\0')
 		return (0);
@@ -74,18 +74,18 @@ int	validate_args(t_args *args)
 
 	if (args->number_of_coders < 1 || args->number_of_coders > 2000)
 		return (print_error("Number of coders must be between 1 and 2000."));
-	if (args->number_of_compiles_required > UINT_MAX
+	if (args->number_of_compiles_required > INT_MAX
 		|| args->number_of_compiles_required == 0)
 		return (print_error("Number of compiles "
-				"must be between 1 and UINT_MAX"));
-	limit = 9223372036854775807LL / 1000;
+				"must be between 1 and INT_MAX"));
+	limit = INT_MAX;
 	if (args->time_to_burnout > limit || args->time_to_compile > limit
 		|| args->time_to_debug > limit || args->time_to_refactor > limit
 		|| args->dongle_cooldown > limit)
-		return (print_error("Time values are too high : overflow risk"));
+		return (print_error("Invalid non-integer value."));
 	if (args->time_to_burnout <= 0 || args->time_to_compile <= 0
 		|| args->time_to_debug <= 0 || args->time_to_refactor <= 0)
-		return (print_error("Negative or zero invalid value"));
+		return (print_error("Negative or zero invalid value."));
 	if (args->dongle_cooldown < 0)
 		return (print_error("Dongle_cooldown can not be a negative value."));
 	return (1);
@@ -93,26 +93,26 @@ int	validate_args(t_args *args)
 
 int	fill_args_structure(t_args *args, int argc, char **argv)
 {
-	size_t		i;
-	int			error;
-	long long	*ptr;
+	int	i;
+	int	error;
 
-	i = 0;
 	error = 0;
 	if (argc != 9)
 		return (print_use());
-	while (i++ < 7)
+	i = 1;
+	while (i <= 7)
 	{
 		if (!is_number_str(argv[i]))
-			return (print_error("Args 1 to 7 must be positive integers."));
+			return (print_error("Arguments 1 to 7 must be positive integers."));
+		i++;
 	}
 	args->number_of_coders = (size_t)ft_atoll_check(argv[1], &error);
+	args->time_to_burnout = ft_atoll_check(argv[2], &error);
+	args->time_to_compile = ft_atoll_check(argv[3], &error);
+	args->time_to_debug = ft_atoll_check(argv[4], &error);
+	args->time_to_refactor = ft_atoll_check(argv[5], &error);
 	args->number_of_compiles_required = (size_t)ft_atoll_check(argv[6], &error);
-	ptr = &args->time_to_burnout;
-	i = 2;
-	while (i <= 5)
-		*(ptr++) = (long long)ft_atoll_check(argv[i++], &error);
-	args->dongle_cooldown = (long long)ft_atoll_check(argv[7], &error);
+	args->dongle_cooldown = ft_atoll_check(argv[7], &error);
 	if (error == 1)
 		return (print_error("Numeric overflow detected."));
 	if (!fill_scheduler(args, argv[8]))
