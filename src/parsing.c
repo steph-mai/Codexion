@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/05 11:52:49 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 16:10:58 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/13 11:46:19 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,18 +74,18 @@ int	validate_args(t_args *args)
 
 	if (args->number_of_coders < 1 || args->number_of_coders > 2000)
 		return (print_error("Number of coders must be between 1 and 2000."));
-	if (args->number_of_compiles_required > UINT_MAX
+	if (args->number_of_compiles_required > INT_MAX
 		|| args->number_of_compiles_required == 0)
 		return (print_error("Number of compiles "
-				"must be between 1 and UINT_MAX"));
-	limit = 9223372036854775807LL / 1000;
+				"must be between 1 and INT_MAX"));
+	limit = INT_MAX;
 	if (args->time_to_burnout > limit || args->time_to_compile > limit
 		|| args->time_to_debug > limit || args->time_to_refactor > limit
 		|| args->dongle_cooldown > limit)
-		return (print_error("Time values are too high : overflow risk"));
+		return (print_error("Invalid non-integer value."));
 	if (args->time_to_burnout <= 0 || args->time_to_compile <= 0
 		|| args->time_to_debug <= 0 || args->time_to_refactor <= 0)
-		return (print_error("Negative or zero invalid value"));
+		return (print_error("Negative or zero invalid value."));
 	if (args->dongle_cooldown < 0)
 		return (print_error("Dongle_cooldown can not be a negative value."));
 	return (1);
