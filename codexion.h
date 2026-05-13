@@ -6,7 +6,7 @@
 /*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/13 16:18:08 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/13 17:11:30 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int			fill_args_structure(t_args *args, int argc, char **argv);
 int			init_data(t_data *data);
 
 // ######################## UTILS AND FREE ########################
-int			free_everything_and_return(t_data *data);
+int			free_everything_and_return(t_data *data, int exit_code);
 void		cleanup_simulation(t_data *data);
 
 // ######################## CODER THREADS ########################
