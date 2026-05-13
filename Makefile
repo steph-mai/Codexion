@@ -32,6 +32,7 @@ $(NAME): $(OBJS)
 
 clean:
 	@rm -f $(OBJS) $(SRCS:.c=.d)
+	@rm -rf tests/__pycache__ .pytest_cache
 	@echo "Object and dependency files cleaned."
 
 fclean: clean

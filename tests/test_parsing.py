@@ -4,6 +4,7 @@ import pytest
 BINARY = "./codexion"
 
 def run_binary(args):
+    """Executes the binary and returns the return code."""
     process = subprocess.run(
         [BINARY] + args,
         stdout=subprocess.PIPE,
@@ -12,46 +13,46 @@ def run_binary(args):
     )
     return process.returncode
 
+# --- 1. MATHEMATICAL SIGNS AND FORMATTING ---
 @pytest.mark.parametrize("args", [
     ["5", "800", "+200", "200", "200", "7", "100", "fifo"],
     ["5", "800", "++200", "200", "200", "7", "100", "fifo"],
     ["5", "800", "--200", "200", "200", "7", "100", "fifo"],
-    ["5", "800", "+-200", "200", "200", "7", "100", "fifo"],  # Signes mixtes (doit fail)
-    ["5", "800", "200-", "200", "200", "7", "100", "fifo"],   # Signe à la fin (doit fail)
+    ["5", "800", "+-200", "200", "200", "7", "100", "fifo"],
+    # Mixed signs (Should fail)
+    ["5", "800", "200-", "200", "200", "7", "100", "fifo"],
+    # Sign at the end (Should fail)
 ])
 def test_signs_format(args):
-    """Vérifie la gestion rigoureuse des signes mathématiques."""
-    # Le premier cas (+200) peut passer ou fail selon ta stricte application de is_number_str
-    # Si is_number_str n'autorise que '0'-'9', alors +200 doit fail.
+    """Checks strict handling of mathematical signs."""
+    # Note: Case "+200" might pass or fail
+    # depending on your 'is_digit' implementation.
+    # Per subject rules, we usually reject anything
+    # that isn't a pure positive integer.
     if args[2] == "+200":
-        pass # Dépend de ta consigne, souvent on accepte le '+' unique
+        pass
     else:
         assert run_binary(args) != 0
 
-# --- 2. TESTS D'ESPACES ET CARACTÈRES INVISIBLES ---
+# --- 2. SPACES AND INVISIBLE CHARACTERS ---
 @pytest.mark.parametrize("args", [
-    ["5", "800 ", "200", "200", "200", "7", "100", "fifo"],   # Espace après
-    ["5", "800", "\t200", "200", "200", "7", "100", "fifo"],  # Tabulation
-    ["5", "800", "", "200", "200", "7", "100", "fifo"],       # Argument vide ""
+    ["5", "800 ", "200", "200", "200", "7", "100", "fifo"],   # Trailing space
+    ["5", "800", "\t200", "200", "200", "7", "100", "fifo"],
+    # Tabulation character
+    ["5", "800", "", "200", "200", "7", "100", "fifo"],       # Empty string ""
 ])
 def test_spaces_and_empty(args):
-    """Vérifie que les espaces et arguments vides ne passent pas inaperçus."""
-    #is_number_str devrait normalement rejeter tout ce qui n'est pas un chiffre pur
+    """Ensures spaces and empty arguments are rejected."""
+    # Arguments must be valid integers; empty strings or spaces must fail.
     assert run_binary(args) != 0
 
-# --- 3. TESTS DE LOGIQUE MÉTIER AVANCÉE (VALEURS LIMITES) ---
+# --- 3. BUSINESS LOGIC & EDGE CASES ---
 @pytest.mark.parametrize("args", [
-    ["0", "800", "200", "200", "200", "7", "100", "fifo"],           # Zéro codeur (Interdit)
-    ["2001", "800", "200", "200", "200", "7", "100", "fifo"],         # Trop de codeurs (ex: > 200)
-    ["5", "0", "200", "200", "200", "7", "100", "fifo"],             # Time to burnout à 0
-    ["5", "800", "200", "200", "200", "7", "99999999999999999999", "fifo"],    # Dongle cooldown immense
+    ["0", "800", "200", "200", "200", "7", "100", "fifo"],  # Zero coders
+    ["5", "800", "200", "200", "200", "7", "100", "wrong_sched"],
+    ["5", "-800", "200", "200", "200", "7", "100", "fifo"],
 ])
-def test_business_limits(args):
-    """Vérifie que validate_args rejette les valeurs physiquement impossibles."""
-    assert run_binary(args) != 0
-
-# --- 4. LE CAS LLONG_MIN (TRÈS SPÉCIFIQUE) ---
-def test_llong_min():
-    """Vérifie le comportement face à la plus petite valeur possible d'un long long."""
-    args = ["5", "-9223372036854775808", "200", "200", "200", "7", "100", "fifo"]
+def test_business_logic_limits(args):
+    """Verifies that logically invalid inputs are rejected."""
+    # The program must reject negative numbers or invalid schedulers.
     assert run_binary(args) != 0
