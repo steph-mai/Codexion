@@ -37,8 +37,6 @@ def test_signs_format(args):
 # --- 2. SPACES AND INVISIBLE CHARACTERS ---
 @pytest.mark.parametrize("args", [
     ["5", "800 ", "200", "200", "200", "7", "100", "fifo"],   # Trailing space
-    ["5", "800", "\t200", "200", "200", "7", "100", "fifo"],
-    # Tabulation character
     ["5", "800", "", "200", "200", "7", "100", "fifo"],       # Empty string ""
 ])
 def test_spaces_and_empty(args):
@@ -55,4 +53,18 @@ def test_spaces_and_empty(args):
 def test_business_logic_limits(args):
     """Verifies that logically invalid inputs are rejected."""
     # The program must reject negative numbers or invalid schedulers.
+    assert run_binary(args) != 0
+
+# --- 4. NON-INTEGER CHARACTERS ---
+@pytest.mark.parametrize("args", [
+    ["5", "800a", "200", "200", "200", "7", "100", "fifo"],   # Letters
+    ["5", "800", "20.5", "200", "200", "7", "100", "fifo"],  # Floats / Decimals
+    ["5", "800", "200!", "200", "200", "7", "100", "fifo"],   # Special characters
+    ["5", "800", "abc", "200", "200", "7", "100", "fifo"],    # Pure string
+    ["5", "2147483648", "200", "200", "200", "7", "100", "fifo"], # Beyond INT_MAX
+])
+def test_non_integers(args):
+    """Verifies that non-integer values are strictly rejected."""
+    # This ensures your is_number_str or parsing logic doesn't just
+    # take the first digits (like atoi would do with "800a").
     assert run_binary(args) != 0

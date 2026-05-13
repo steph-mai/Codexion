@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 17:31:59 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/13 16:18:08 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,10 @@ typedef struct s_queue
 
 typedef struct s_dongle
 {
-	pthread_mutex_t	dongle_mutex;
-	pthread_cond_t	dongle_cond;
 	size_t			id;
 	long long		available_at;
 	int				is_unused;
-	int				is_available;
-	t_queue			wait_queue;
-}				t_dongle;
+}					t_dongle;
 
 typedef struct s_coder
 {
@@ -87,6 +83,9 @@ typedef struct s_data
 	pthread_t		thread_monitoring;
 	long long		start_time;
 	int				is_simulation_running;
+	t_queue			wait_queue;
+	pthread_mutex_t	queue_mutex;
+	pthread_cond_t	queue_cond;
 }				t_data;
 
 // ######################## PARSING AND INITIALIZATION ########################
@@ -97,7 +96,6 @@ int			init_data(t_data *data);
 // ######################## UTILS AND FREE ########################
 int			free_everything_and_return(t_data *data);
 void		cleanup_simulation(t_data *data);
-void		cleanup_initialized_dongles(t_data *data, size_t count);
 
 // ######################## CODER THREADS ########################
 void		*coder_routine(void *arg);

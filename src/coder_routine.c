@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coder_routine.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
+/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:43:35 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/12 14:32:02 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/13 14:39:13 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 static void	compilation_work(t_coder *coder)
 {
 	print_status(coder, "is compiling");
+	active_sleep(coder->data->parsed_args.time_to_compile, coder->data);
 	pthread_mutex_lock(&coder->data->simulation_mutex);
 	coder->last_compilation_time = get_time_ms();
 	coder->achieved_compilations_nb++;
 	pthread_mutex_unlock(&coder->data->simulation_mutex);
-	active_sleep(coder->data->parsed_args.time_to_compile, coder->data);
 }
 
 static int	complete_tasks(t_coder *coder)
