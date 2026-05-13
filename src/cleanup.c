@@ -6,7 +6,7 @@
 /*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 15:34:18 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/13 16:20:26 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/13 17:09:02 by stephanie        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,28 +38,22 @@ void	cleanup_simulation(t_data *data)
 	}
 }
 
-int	free_everything_and_return(t_data *data)
+int	free_everything_and_return(t_data *data, int exit_code)
 {
 	if (!data)
-		return (0);
+		return (exit_code);
 	if (data->dongles)
-	{
 		free(data->dongles);
-		data->dongles = NULL;
-	}
 	if (data->coders)
-	{
 		free(data->coders);
-		data->coders = NULL;
-	}
 	if (data->wait_queue.node)
-	{
 		free(data->wait_queue.node);
-		data->wait_queue.node = NULL;
-	}
+	data->dongles = NULL;
+	data->coders = NULL;
+	data->wait_queue.node = NULL;
 	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->simulation_mutex);
 	pthread_mutex_destroy(&data->queue_mutex);
 	pthread_cond_destroy(&data->queue_cond);
-	return (0);
+	return (exit_code);
 }
