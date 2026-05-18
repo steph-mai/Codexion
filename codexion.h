@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/17 18:28:23 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/18 14:18:45 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ typedef struct s_node
 	size_t		coder_id;
 	long long	priority_marker;
 	long long	arrival_time;
+	void		*left_dongle;
+	void		*right_dongle;
 }	t_node;
 
 typedef struct s_queue
