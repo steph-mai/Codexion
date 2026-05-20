@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:43:35 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/18 14:16:33 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/20 11:46:09 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,13 @@ void	*coder_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
+	if (coder->data->parsed_args.number_of_coders == 1)
+	{
+		print_status(coder, "has taken a dongle");
+		active_sleep(coder->data->parsed_args.time_to_burnout
+			+ 10, coder->data);
+		return (NULL);
+	}
 	if (coder->id % 2 == 0)
 		usleep(1000);
 	while (get_simulation_status(coder->data))
