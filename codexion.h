@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:04 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/18 14:18:45 by stmaire          ###   ########.fr       */
+/*   Updated: 2026/05/20 10:27:14 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,6 @@ int			get_simulation_status(t_data *data);
 // ######################## SCHEDULER #######################
 int			is_priority(t_node a, t_node b);
 void		push_in_wait_queue(t_queue *wait_queue, t_node new_in_wait_list);
-void		wait_queue_pop(t_queue *wait_queue);
 void		remove_from_wait_queue(t_queue *wait_queue, size_t coder_id);
 size_t		get_first_in_wait_queue(t_queue *wait_queue);
 

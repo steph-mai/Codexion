@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scheduler.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stephanie <stephanie@student.42.fr>        +#+  +:+       +#+        */
+/*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 10:03:26 by stmaire           #+#    #+#             */
-/*   Updated: 2026/05/13 16:19:37 by stephanie        ###   ########.fr       */
+/*   Updated: 2026/05/20 10:29:39 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,29 +40,6 @@ void	push_in_wait_queue(t_queue *wait_queue, t_node new_node)
 			swap_nodes(&wait_queue->node[child_index],
 				&wait_queue->node[parent_index]);
 			child_index = parent_index;
-		}
-		else
-			break ;
-	}
-}
-
-void	wait_queue_pop(t_queue *wait_queue)
-{
-	size_t	i;
-	size_t	smallest_index;
-
-	i = 0;
-	if (!wait_queue || wait_queue->size <= 0)
-		return ;
-	wait_queue->node[0] = wait_queue->node[wait_queue->size -1];
-	wait_queue->size -= 1;
-	while (1)
-	{
-		smallest_index = get_smallest_child(wait_queue, i);
-		if (smallest_index != i)
-		{
-			swap_nodes(&wait_queue->node[i], &wait_queue->node[smallest_index]);
-			i = smallest_index;
 		}
 		else
 			break ;
